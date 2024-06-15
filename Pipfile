@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
+alembic = "*"
+pydantic = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
+python-multipart = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+libgravatar = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
