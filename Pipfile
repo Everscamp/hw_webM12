@@ -11,8 +11,16 @@ alembic = "*"
 pydantic = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 python-multipart = "*"
-python-jose = {extras = ["cryptography"], version = "*"}
+python-jose = "*"
 libgravatar = "*"
+redis = "*"
+fastapi-limiter = "*"
+cloudinary = "*"
+pydantic-settings = "*"
+uvicorn = "*"
+python-dotenv = "*"
+typing-extensions = "*"
+asyncio = "*"
 
 [dev-packages]
 
