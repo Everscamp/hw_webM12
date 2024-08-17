@@ -16,6 +16,19 @@ security = HTTPBearer()
 
 @router.get('/refresh_token', response_model=TokenModel)
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
+    """
+    Route to generate refresh tokens.
+
+    Args:
+        credentials (HTTPAuthorizationCredentials, optional): User credentials. Defaults to Security(security).
+        db (Session, optional): Session to connect to DB. Defaults to Depends(get_db).
+
+    Raises:
+        HTTPException: HTTP_401_UNAUTHORIZED if invalid refresh token.
+
+    Returns:
+        dict: Dict with tokens.
+    """
     token = credentials.credentials
     email = await auth_service.decode_refresh_token(token)
     user = await repository_users.get_user_by_email(email, db)
@@ -30,6 +43,21 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
+    """
+    Route for registration in our application.
+
+    Args:
+        body (UserModel): _description_
+        background_tasks (BackgroundTasks): _description_
+        request (Request): _description_
+        db (Session, optional): Session to connect to DB. Defaults to Depends(get_db).
+
+    Raises:
+        HTTPException: HTTP_409_CONFLICT if account already exists.
+
+    Returns:
+        dict: _description_
+    """
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
@@ -40,6 +68,19 @@ async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Re
 
 @router.post("/login", response_model=TokenModel)
 async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """
+    Route for user authentication in our application.
+
+    Args:
+        body (OAuth2PasswordRequestForm, optional): Email and password. Defaults to Depends().
+        db (Session, optional): Session to connect to DB. Defaults to Depends(get_db).
+
+    Raises:
+        HTTPException: HTTP_401_UNAUTHORIZED if Invalid email/Email not confirmed/Invalid password.
+
+    Returns:
+        str: Returns a JWT token for user authorization
+    """
     user = await repository_users.get_user_by_email(body.username, db)
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email")
@@ -55,6 +96,20 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
 
 @router.get('/confirmed_email/{token}')
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
+    """
+    Email confirmation. Shows a message if email was confirmed or already exists.
+    Shows error message if no such user. 
+
+    Args:
+        token (str): JWT access_token
+        db (Session, optional): Session to connect to DB. Defaults to Depends(get_db).
+
+    Raises:
+        HTTPException: HTTP_400_BAD_REQUEST if Verification error.
+
+    Returns:
+        dict: Message response.
+    """
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, db)
     if user is None:
@@ -67,6 +122,20 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
 @router.post('/request_email')
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                         db: Session = Depends(get_db)):
+    """
+    The function returns a response indicating that the email has been sent for confirmation 
+    or email already has been confirmed.
+
+
+    Args:
+        body (RequestEmail): JSON body with the email address.
+        background_tasks (BackgroundTasks): Task to the BackgroundTasks background task manager to send an email to the user.
+        request (Request): Request to the get the base url.
+        db (Session, optional): Session to connect to DB. Defaults to Depends(get_db).
+
+    Returns:
+        dict: Message response.
+    """
     user = await repository_users.get_user_by_email(body.email, db)
 
     if user.confirmed:

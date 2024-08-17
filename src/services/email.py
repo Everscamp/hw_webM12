@@ -9,8 +9,10 @@ from src.services.auth import auth_service
 from src.conf.config import settings
 
 
-module_dir = Path.cwd()
+# module_dir = Path.cwd()
 relative_path = "src\\templates"
+module_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 absolute_file_path = os.path.join(module_dir, relative_path)
 
 conf = ConnectionConfig(
@@ -29,6 +31,14 @@ conf = ConnectionConfig(
 
 
 async def send_email(email: EmailStr, username: str, host: str):
+    """
+    Sends the email with a JWT token for email verification to a specified user.
+
+    Args:
+        email (EmailStr): User Email
+        username (str): User username
+        host (str): The host where our application is running
+    """
     try:
         token_verification = auth_service.create_email_token({"sub": email})
         message = MessageSchema(

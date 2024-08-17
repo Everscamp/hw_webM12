@@ -21,6 +21,8 @@ uvicorn = "*"
 python-dotenv = "*"
 typing-extensions = "*"
 asyncio = "*"
+sphinx = "*"
+pytest-cov = "*"
 
 [dev-packages]
 
