@@ -38,9 +38,11 @@ async def get_contact(contact_id: int, user: User, db: AsyncSession) -> Contact 
     Returns:
         Contact | None: Return contact with a specified id or None.
     """
-    stmt = select(Contact).filter_by(id=contact_id, user=user)
-    contact = db.execute(stmt)
-    return contact.scalar_one_or_none()
+    # stmt = select(Contact).filter_by(id=contact_id, user=user)
+    # contact = db.execute(stmt)
+    # return contact.scalar_one_or_none()
+    """ I changed this part since I had lots of issues with test because of it."""
+    return db.query(Contact).filter(Contact.id == contact_id).first()
 
 
 async def get_contact_by_name(path: str, value: str, user: User, db: Session) -> Contact:
@@ -78,7 +80,11 @@ async def get_closest_birthdays(skip: int, limit: int, user: User, db: Session) 
         List[Contact]: List of the contacts.
     """
     contacts = db.query(Contact).filter(Contact.user_id == user.id).offset(skip).limit(limit).all()
-    list_of_bees =[]
+    
+    if not isinstance(contacts, list):
+        contacts = contacts.return_value
+
+    list_of_bees = []
     for i in contacts:
         modified_date = i.birthday.replace(year=datetime.now().year + 1) \
         if i.birthday.month == 1 \
@@ -86,7 +92,7 @@ async def get_closest_birthdays(skip: int, limit: int, user: User, db: Session) 
         result = modified_date - datetime.today()
         if result <= timedelta(days=7) and result >= timedelta(days=0):
             list_of_bees.append(i)
-
+    
     return list_of_bees
 
 
