@@ -23,6 +23,8 @@ typing-extensions = "*"
 asyncio = "*"
 sphinx = "*"
 pytest-cov = "*"
+pytest = "*"
+httpx = "*"
 
 [dev-packages]
 
