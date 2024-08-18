@@ -9,6 +9,9 @@ from fastapi_limiter import FastAPILimiter
 from contextlib import asynccontextmanager
 import asyncio
 
+import sys
+import os
+sys.path.append(os.getcwd())
 
 async def startup():
     """

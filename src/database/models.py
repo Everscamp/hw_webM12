@@ -4,6 +4,10 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
+import sys
+import os
+sys.path.append(os.getcwd())
+
 Base = declarative_base()
 
 
